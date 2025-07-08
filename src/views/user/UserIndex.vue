@@ -71,7 +71,7 @@
           </template>
           <el-tabs v-model="selectedTab">
             <el-tab-pane label="基本资料" name="userinfo">
-              <userInfo :user="UserInfo" @userUpdated="refreshUserData"/>
+              <userInfo :user="UserInfo"/>
             </el-tab-pane>
             <el-tab-pane label="修改密码" name="resetPwd">
               <UserResetPassword/>

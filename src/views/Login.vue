@@ -49,7 +49,7 @@
 import {ref} from "vue";
 import {User, Lock, Key} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
-import {loginUserService} from "@/api/user.js";
+import {loginUserService, userInfoService} from "@/api/user.js";
 import {useTokenStore} from "@/stores/token.js";
 import router from "@/router/index.js";
 import {useUserInfoStore} from "@/stores/user.js";
@@ -124,12 +124,11 @@ const login = async () => {
   loading.value = true;
   try {
     const result = await loginUserService(loginData.value);
-    const tokenStore = useTokenStore();
-    tokenStore.setToken(result.data.token);
-    // setUserInfo.setInfo({name: result.data.name});
+    useTokenStore().setToken(result.data.token);
+    useUserInfoStore().setInfo(result.data)
     ElMessage({message: '登录成功', type: 'success'});
     // 跳转逻辑可以在这里添加
-    router.push('/');
+    await router.push('/');
   } catch (error) {
     loginErrorCount.value += 1;
     if (loginErrorCount.value >= 5) {

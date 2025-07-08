@@ -1,16 +1,18 @@
 import {defineStore} from "pinia"
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 
 export const useUserInfoStore = defineStore('userInfo', () => {
     //定义用户信息
     const info = ref({
+        id: '',
         name: '',
         imagesUrl: '',
         email: '',
         contactInfo: '',
         sex: '',
         userType: '',
-        createTime: ''
+        createTime: '',
+        superAdmin: '',
     })
     //定义修改用户信息的方法
     const setInfo = (newInfo) => {

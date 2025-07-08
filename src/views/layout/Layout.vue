@@ -14,7 +14,7 @@
           </el-icon>
           <template #title><span>公告</span></template>
         </el-menu-item>
-        <el-menu-item index="/charityAccount">
+        <el-menu-item index="/charityRanking">
           <el-icon>
             <TrendCharts/>
           </el-icon>
@@ -58,7 +58,7 @@
             <span>回收预约管理</span>
           </el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="/charityRanking">
+        <el-menu-item index="/charityAccount">
           <el-icon>
             <Tools/>
           </el-icon>
@@ -163,7 +163,7 @@ import {
 } from "@element-plus/icons-vue";
 import Default from "@/assets/images/default.png"
 import {useUserInfoStore} from "@/stores/user.js";
-import {userInfoService} from "@/api/user.js";
+import {logoutService, userInfoService} from "@/api/user.js";
 import {useRouter} from "vue-router";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {useTokenStore} from "@/stores/token.js";
@@ -295,10 +295,17 @@ const handleCommand = (command) => {
           cancelButtonText: '取消',
           type: 'warning',
         }
-    ).then(() => {
+    ).then(async () => {
+      const result = await logoutService();
+      ElMessage({
+        type: 'success',
+        message: result.data,
+      })
       TokenStore.removeToken();
       removeUserInfo.removeInfo();
-      router.push('/login');
+      //调用接口登出
+      await router.push('/login');
+
     })
   } else {
     router.push('/user/' + command)

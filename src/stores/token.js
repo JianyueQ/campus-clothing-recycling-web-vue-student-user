@@ -13,7 +13,6 @@ export const useTokenStore = defineStore('token', () => {
     const removeToken = () => {
         token.value = ''
     }
-
     return {
         setToken, removeToken, token
     }

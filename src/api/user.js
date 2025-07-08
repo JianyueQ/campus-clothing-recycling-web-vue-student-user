@@ -20,3 +20,12 @@ export const userUpdateSercice = (userData) => {
 export const userUpdatePwdService = (pswData) => {
     return request.put('/admin/updatePwd', pswData)
 }
+//获取全部管理员用户
+export const getAllUserService = () => {
+    return request.get('/admin/getInfoAll')
+};
+
+//退出登录
+export const logoutService = () => {
+    return request.post('/admin/logout')
+}

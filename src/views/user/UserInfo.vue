@@ -73,6 +73,7 @@ const UpdateUser = async () => {
   ElMessage.success(result.message || '更新成功');
   //强制页面刷新
   window.location.reload();
+
 }
 //获取用户信息
 const getUserInfo = async () => {
