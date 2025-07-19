@@ -58,6 +58,33 @@
                 </div>
                 <div class="pull-right">{{ userData.createTime }}</div>
               </li>
+              <li class="list-group-item">
+                <div>
+                  <el-icon>
+                    <HomeFilled />
+                  </el-icon>
+                  学校
+                </div>
+                <div class="pull-right">{{ userData.schoolName }}</div>
+              </li>
+              <li class="list-group-item">
+                <div>
+                  <el-icon>
+                    <HomeFilled />
+                  </el-icon>
+                  学院
+                </div>
+                <div class="pull-right">{{ userData.collegeName }}</div>
+              </li>
+              <li class="list-group-item">
+                <div>
+                  <el-icon>
+                    <HomeFilled />
+                  </el-icon>
+                  班级
+                </div>
+                <div class="pull-right">{{ userData.className }}</div>
+              </li>
             </ul>
           </div>
         </el-card>
@@ -87,7 +114,7 @@ import UserInfo from "@/views/user/UserInfo.vue";
 import {onMounted, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import UserResetPassword from "@/views/user/UserResetPassword.vue";
-import {Avatar, Phone, Promotion, Timer, User} from "@element-plus/icons-vue";
+import {Avatar, HomeFilled, Phone, Promotion, Timer, User} from "@element-plus/icons-vue";
 import {useUserInfoStore} from '@/stores/user';
 import {computed} from 'vue';
 import UserAvatar from "@/views/user/UserAvatar.vue";
@@ -107,6 +134,9 @@ const userData = ref(
       imagesUrl: "",
       createTime: "",
       userType: "",
+      className:'',
+      schoolName: '',
+      collegeName: '',
     }
 )
 const roleMap = {
@@ -128,6 +158,10 @@ const getUserInfo = async () => {
     sex: result.data.sex,
     userType: roleName,
     createTime: result.data.createTime,
+    imagesUrl: result.data.imagesUrl,
+    className: result.data.className,
+    schoolName: result.data.schoolName,
+    collegeName: result.data.collegeName,
   }
   useUserInfoStore().setInfo(result.data);
 }

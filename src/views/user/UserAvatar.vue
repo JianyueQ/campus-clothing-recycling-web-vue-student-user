@@ -66,12 +66,14 @@ import {VueCropper} from "vue-cropper"
 import {uploadAvatar} from "@/api/uploadFile.js"
 import {Minus, Plus, RefreshLeft, RefreshRight, Upload} from '@element-plus/icons-vue'
 
-import {getCurrentInstance, onMounted, reactive, ref} from "vue";
+import {getCurrentInstance, onMounted, reactive, ref, watch} from "vue";
 import {useUserInfoStore} from "@/stores/user.js";
 import {userUpdateSercice} from "@/api/user.js";
 import Default from "@/assets/images/default.png";
 
 const userStore = useUserInfoStore().getInfo();
+const userInfo = useUserInfoStore()
+
 const {proxy} = getCurrentInstance()
 
 const open = ref(false)
@@ -79,9 +81,10 @@ const visible = ref(false)
 const title = ref("修改头像")
 
 
+
 //图片裁剪数据
 const options = reactive({
-  img: userStore.imagesUrl,     // 裁剪图片的地址
+  img: userInfo.info.imagesUrl,     // 裁剪图片的地址
   autoCrop: true,            // 是否默认生成截图框
   autoCropWidth: 200,        // 默认生成截图框宽度
   autoCropHeight: 200,       // 默认生成截图框高度
@@ -142,8 +145,11 @@ function uploadImg() {
     formData.append("file", data, options.filename)
     uploadAvatar(formData).then(response => {
       open.value = false
-      options.img = response.data
+      const newImageUrl = response.data;
+      options.img = newImageUrl;
+      // options.img = response.data
       userStore.imagesUrl = options.img
+      userInfo.setInfo({ ...userStore, imagesUrl: newImageUrl }); // 更新全局状态中的头像字段
       proxy.$modal.msgSuccess("修改成功")
       visible.value = false
       //将图片的url路径上传到用户信息
@@ -163,6 +169,12 @@ function closeDialog() {
   options.visible = false
 }
 
+watch(
+    () => userInfo.info.imagesUrl,
+    (newUrl) => {
+      options.img = newUrl || Default;
+    }
+);
 </script>
 
 <style lang='scss' scoped>

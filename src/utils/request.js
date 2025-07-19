@@ -17,7 +17,7 @@ instance.interceptors.request.use(
     (config) => {
         const tokenStore = useTokenStore();
         if (tokenStore.token) {
-            config.headers.Authentication = tokenStore.token
+            config.headers.token = tokenStore.token
         }
         return config;
     },

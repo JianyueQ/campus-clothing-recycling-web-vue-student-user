@@ -87,16 +87,13 @@ const UpdatePwd = () => {
     let result = await userUpdatePwdService(PwdData.value)
     ElMessage({
       showClose: true,
-      message: '更改成功，请重新登陆',
+      message: '更改成功',
       type: 'success',
     })
     setTimeout(() => {
       window.location.reload()
     }, 1500) // 延迟1.5秒刷新，让用户看到成功提示
-    if ( result.msg !== null ){
-      return;
-    }
-    tokenStore.removeToken()
+    // tokenStore.removeToken()
   })
 }
 </script>

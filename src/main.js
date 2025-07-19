@@ -17,6 +17,8 @@ import modalPlugin from "@/components/plugins/modalPlugin.js";
 const app = createApp(App);
 const pinia = createPinia();
 const persist = createPersistedState();
+import vue3videoPlay from "vue3-video-play/dist/index.mjs"; // 引入组件
+import "vue3-video-play/dist/style.css"; // 引入css
 
 pinia.use(persist)
 app.use(pinia)
@@ -25,4 +27,5 @@ app.use(ElementPlus, { locale })
 app.component('svg-icon', SvgIcon)
 app.use(modalPlugin)
 app.component('QuillEditor', QuillEditor)
+app.use(vue3videoPlay);
 app.mount('#app')

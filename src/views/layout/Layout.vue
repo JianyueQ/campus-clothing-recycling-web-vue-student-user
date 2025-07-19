@@ -6,7 +6,7 @@
         <!-- 添加侧边栏Logo和系统名称 -->
         <div class="sidebar-header">
           <img src="@/assets/logo/logo.png" alt="Logo" class="logo">
-          <span class="system-name">公益端管理系统</span>
+          <span class="system-name">学生端服务平台</span>
         </div>
         <el-menu-item index="/notice">
           <el-icon>
@@ -18,52 +18,34 @@
           <el-icon>
             <TrendCharts/>
           </el-icon>
-          <template #title><span>公益榜单</span></template>
+          <template #title><span>数据统计</span></template>
         </el-menu-item>
-        <el-menu-item index="/donationRecord">
+        <el-menu-item index="/donationQuery">
           <el-icon>
             <Document/>
           </el-icon>
-          <span>捐赠记录跟踪</span>
+          <span>捐赠信息与反馈</span>
         </el-menu-item>
-        <el-sub-menu index="/system">
+        <el-sub-menu index="/system/appointment">
           <template #title>
             <el-icon>
-              <Tools/>
+              <Van />
             </el-icon>
-            <span>业务管理</span>
+            <span>回收预约</span>
           </template>
-          <el-menu-item index="/system/recipientLocation">
+          <el-menu-item index="/system/onlineAppointment">
             <el-icon>
-              <Location/>
+              <Document />
             </el-icon>
-            <span>受捐地管理</span>
+            <span>线上预约</span>
           </el-menu-item>
-          <el-menu-item index="/system/recipientManagement">
+          <el-menu-item index="/system/offlineDelivery">
             <el-icon>
-              <UserFilled/>
+              <Location />
             </el-icon>
-            <span>接受方管理</span>
-          </el-menu-item>
-          <el-menu-item index="/system/collectorManagement">
-            <el-icon>
-              <Avatar/>
-            </el-icon>
-            <span>回收员管理</span>
-          </el-menu-item>
-          <el-menu-item index="/system/recyclingAppointment">
-            <el-icon>
-              <Van/>
-            </el-icon>
-            <span>回收预约管理</span>
+            <span>线下投递</span>
           </el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="/charityAccount">
-          <el-icon>
-            <Tools/>
-          </el-icon>
-          <span>公益端账号管理</span>
-        </el-menu-item>
         <!-- element-plus子菜单标签 -->
         <el-sub-menu index="/user">
           <template #title>
@@ -78,12 +60,6 @@
             </el-icon>
             <span>基本资料</span>
           </el-menu-item>
-<!--          <el-menu-item index="/user/avatar">-->
-<!--            <el-icon>-->
-<!--              <Crop/>-->
-<!--            </el-icon>-->
-<!--            <span>更换头像</span>-->
-<!--          </el-menu-item>-->
           <el-menu-item index="/user/resetpassword">
             <el-icon>
               <EditPen/>
@@ -111,7 +87,7 @@
             <div class="avatar-container">
               <el-dropdown placement="bottom-end" @command="handleCommand">
                 <span class="el-dropdown__box">
-                  <el-avatar :src="userData.imagesUrl || Default" class="avatar"/>
+                  <el-avatar :src="userStore.info.imagesUrl || Default" class="avatar"/>
                   <strong class="username">{{ userData.name }}</strong>
                 </span>
                 <template #dropdown>
@@ -147,7 +123,7 @@
           </router-view>
         </el-main>
         <!-- 底栏容器 -->
-        <el-footer> 校园公益平台 ©2025 Created by jk6</el-footer>
+        <el-footer> 校园公益平台 ©2025 Created by TangYu</el-footer>
       </el-container>
     </el-container>
   </div>
@@ -170,6 +146,7 @@ import {useTokenStore} from "@/stores/token.js";
 import {useRoute} from 'vue-router'
 import { ref, watch} from "vue";
 
+const userStore = useUserInfoStore();
 const TokenStore = useTokenStore();
 const getUserInfo = useUserInfoStore().getInfo();
 const removeUserInfo = useUserInfoStore();
@@ -179,11 +156,6 @@ const userData = ref(
     {
       name: getUserInfo.name,
       imagesUrl: getUserInfo.imagesUrl,
-      email: getUserInfo.email,
-      contactInfo: getUserInfo.contactInfo,
-      sex: getUserInfo.sex,
-      userType: getUserInfo.userType,
-      createTime: getUserInfo.createTime
     }
 )
 

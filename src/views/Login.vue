@@ -3,15 +3,15 @@
   <div class="login-container">
     <el-form ref="form" autocomplete="off" :model="loginData" :rules="rules">
       <div class="title">
-        <span>校园公益平台</span>
+        <span>校园公益平台-用户端</span>
       </div>
       <el-form-item prop="username">
         <el-input :prefix-icon="User" placeholder="请输入用户名" type="username"
-                  v-model="loginData.username"/>
+                  v-model="loginData.username" @keyup.enter="login"/>
       </el-form-item>
       <el-form-item prop="password">
         <el-input :prefix-icon="Lock" placeholder="请输入密码" type="password" show-password
-                  v-model="loginData.password"/>
+                  v-model="loginData.password" @keyup.enter="login"/>
       </el-form-item>
       <el-form-item prop="code" v-if="captchaEnabled">
         <div class="captcha-container">
@@ -21,6 +21,7 @@
               size="large"
               auto-complete="off"
               placeholder="验证码"
+              @keyup.enter="login"
           >
           </el-input>
           <div class="login-code">
@@ -29,9 +30,12 @@
         </div>
       </el-form-item>
       <el-form-item class="flex">
-        <div class="flex">
+        <div class="flex" style="display: flex; justify-content: space-between; width: 100%;">
           <el-checkbox>记住密码</el-checkbox>
-          <!--          <el-link type="primary" :underline="false">忘记密码？</el-link>-->
+          <div>
+            <el-link type="primary" :underline="false" @click="goToForgetPassword">忘记密码？</el-link>
+            <el-link type="primary" :underline="false" style="margin-left: 10px;" @click="goToRegister">注册</el-link>
+          </div>
         </div>
       </el-form-item>
       <!-- 登录按钮 -->
@@ -87,12 +91,13 @@ const clearData = () => {
 const rules = {
   username: [
     {required: true, message: "用户名不能为空", trigger: "blur"},
+    {pattern: /^[a-zA-Z0-9]+$/, message: '用户名只能是字母和数字'}
   ],
   password: [
     {required: true, message: "密码不能为空", trigger: "blur"},
   ],
   code: [
-    { required: true, message: "验证码不能为空", trigger: "blur" },
+    {required: true, message: "验证码不能为空", trigger: "blur"},
   ]
 }
 // 初始化获取验证码图片
@@ -144,9 +149,15 @@ const login = async () => {
     }
     loading.value = false;
   }
-
 };
-
+// 定义 goToRegister 方法
+const goToRegister = () => {
+  router.push('/register'); // 跳转到注册页面
+};
+// 忘记密码
+const goToForgetPassword = () => {
+  router.push('/forgetPassword'); // 跳转到忘记密码页面
+};
 </script>
 
 <style lang="scss" scoped>
@@ -165,6 +176,16 @@ const login = async () => {
     //下边距
     margin-bottom: 20px;
   }
+
+  //.flex {
+  //  display: flex;
+  //  align-items: center;
+  //
+  //  & > .flex {
+  //    width: 100%;
+  //    justify-content: space-between;
+  //  }
+  //}
 
   .el-form {
     width: 400px;

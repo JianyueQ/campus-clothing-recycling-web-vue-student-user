@@ -9,6 +9,17 @@
     <el-form-item label="用户邮箱" style="width: 600px;" prop="email">
       <el-input v-model="userData.email"></el-input>
     </el-form-item>
+    <!-- 新增：学校名称 -->
+    <el-form-item label="学校名称" style="width: 600px;" prop="schoolName">
+      <el-input v-model="userData.schoolName"></el-input>
+    </el-form-item>
+    <!-- 新增：学院名称 -->
+    <el-form-item label="学院名称" style="width: 600px;" prop="collegeName">
+      <el-input v-model="userData.collegeName"></el-input>
+    </el-form-item>
+    <el-form-item label="班级名称" style="width: 600px;" prop="collegeName">
+      <el-input v-model="userData.className"></el-input>
+    </el-form-item>
     <el-form-item label="用户性别" style="width: 600px;">
       <el-radio-group v-model="userData.sex">
         <el-radio :value="1">男</el-radio>
@@ -30,10 +41,13 @@ import {inject, onMounted, ref} from "vue";
 const store = useUserInfoStore().getInfo();
 const userData = ref(
     {
-      name: "",
-      contactInfo: "",
-      email: "",
-      sex: "",
+      name: '',
+      contactInfo: '',
+      email: '',
+      sex: '',
+      schoolName: '', // 新增字段
+      collegeName: '', // 新增字段
+      className: '',
     }
 )
 //清除userData数据
@@ -43,6 +57,9 @@ const clearUserData = () => {
     contactInfo: "",
     email: "",
     sex: "",
+    schoolName: '', // 新增字段
+    collegeName: '', // 新增字段
+    className: '',
   }
 }
 
@@ -58,6 +75,15 @@ const rules = {
     {required: true, message: "请输入输入手机号", trigger: "blur"},
     {pattern: /^1[3-9]\d{9}$/, message: "手机号格式不正确", trigger: "blur"}
   ],
+  schoolName: [
+    {required: true, message: '请输入学校名称', trigger: 'blur'}
+  ],
+  collegeName: [
+    {required: true, message: '请输入学院名称', trigger: 'blur'}
+  ],
+  className: [
+    {required: true, message: '请输入班级名称', trigger: 'blur'}
+  ]
 }
 
 const UpdateUser = async () => {
@@ -70,11 +96,11 @@ const UpdateUser = async () => {
   // 调用API
   const result = await userUpdateSercice(userData.value);
   // 成功处理
+  await getUserInfo();
   ElMessage.success(result.message || '更新成功');
-  //强制页面刷新
-  window.location.reload();
-
 }
+
+
 //获取用户信息
 const getUserInfo = async () => {
   const result = await userInfoService();
@@ -82,11 +108,15 @@ const getUserInfo = async () => {
     name: result.data.name,
     contactInfo: result.data.contactInfo,
     email: result.data.email,
-    sex: result.data.sex
+    sex: Number(result.data.sex),
+    schoolName: result.data.schoolName, // 新增字段
+    collegeName: result.data.collegeName, // 新增字段
+    className: result.data.className,
   }
   useUserInfoStore().setInfo(result.data);
 }
-getUserInfo();
+// 页面加载时获取用户信息
+getUserInfo()
 </script>
 <style scoped lang="scss">
 .user-profile {

@@ -2,23 +2,32 @@ import {createRouter, createWebHistory} from 'vue-router'
 
 //导入组件
 import Notice from "@/views/notice/Notice.vue";
-import CharityAccount from "@/views/charity/CharityAccount.vue";
-import DonationRecord from "@/views/donation/DonationRecord.vue";
-import RecipientLocation from "@/views/recipient/RecipientLocation.vue";
-import RecipientManagement from "@/views/recipient/RecipientManagement.vue";
-import CollectorManagement from "@/views/recycle/CollectorManagement.vue";
-import RecyclingAppointment from "@/views/recycle/RecyclingAppointment.vue";
 import CharityRanking from "@/views/charity/CharityRanking.vue";
 import UserResetPassword from "@/views/user/UserResetPassword.vue";
 import UserAvatar from "@/views/user/UserAvatar.vue";
 import index from "@/views/layout/index.vue";
 import UserIndex from "@/views/user/UserIndex.vue";
 import Login from "@/views/Login.vue";
-
+import OnlineAppointment from "@/views/appointment/OnlineAppointment.vue";
+import OfflineDelivery from "@/views/appointment/OfflineDelivery.vue";
+import NotFound from "@/views/error/404.vue"
+import Register from "@/views/Register.vue";
+import DonationQuery from "@/views/donationQuery/DonationQuery.vue";
+import ForgetPassword from "@/views/ForgetPassword.vue";
+import DonationRecord from "@/views/donation/DonationRecord.vue";
 
 //定义路由关系
 const routes = [
-    {path: '/login', component: Login, meta: {title: '登录页'}},
+    {
+        path: '/login',
+        component: Login,
+        meta: {title: '登录页'}
+    },
+    {
+        path: '/register',
+        component: Register,
+        meta: {title: '注册页'}
+    },
     {
         //重定向路由redirect
         path: '/', component: index, redirect: '/notice', meta: {title: '首页', requiresAuth: true}, children: [
@@ -28,41 +37,28 @@ const routes = [
                 meta: {title: '公告', requiresAuth: true}
             },
             {
-                path: '/charityAccount',
-                component: CharityAccount,
-                meta: {title: '公益端账号管理', requiresAuth: true}
-            },
-            {
-                path: '/donationRecord',
+                path: '/donationQuery',
                 component: DonationRecord,
-                meta: {title: '捐赠记录跟踪', requiresAuth: true}
+                meta: {title: '捐赠信息与反馈', requiresAuth: true}
             },
             {
-                path: '/system', meta: {title: '业务管理', requiresAuth: true}, children: [
+                path: '/system/appointment',
+                meta: {title: '回收预约', requiresAuth: true}, children: [
                     {
-                        path: '/system/recipientLocation',
-                        component: RecipientLocation,
-                        meta: {title: '受捐地管理', requiresAuth: true}
+                        path: '/system/onlineAppointment',
+                        requiresAuth: true,
+                        component: OnlineAppointment,
+                        meta: {title: '线上预约'}
                     },
                     {
-                        path: '/system/recipientManagement',
-                        component: RecipientManagement,
-                        meta: {title: '接受方管理', requiresAuth: true}
-                    },
-                    {
-                        path: '/system/collectorManagement',
-                        component: CollectorManagement,
-                        meta: {title: '回收员管理', requiresAuth: true}
-                    },
-                    {
-                        path: '/system/recyclingAppointment',
-                        component: RecyclingAppointment,
-                        meta: {title: '回收预约管理', requiresAuth: true}
-                    },
-                ]
+                        path: '/system/offlineDelivery',
+                        requiresAuth: true,
+                        component: OfflineDelivery,
+                        meta: {title: '线下投递'}
+                    }
+                ],
             },
-            {path: '/charityRanking', component: CharityRanking, meta: {title: '公益榜单', requiresAuth: true}},
-
+            {path: '/charityRanking', component: CharityRanking, meta: {title: '数据统计', requiresAuth: true}},
             {
                 path: '/user/info', meta: {title: '个人中心', requiresAuth: true}, children: [
                     {
@@ -81,9 +77,21 @@ const routes = [
                         meta: {title: '更换密码', requiresAuth: true}
                     },
                 ]
-            }
+            },
+
         ]
     },
+    {
+        path: '/forgetPassword',
+        component: ForgetPassword,
+        meta: {title: '忘记密码'}
+    },
+    // 最后添加 404 页面路由
+    {
+        path: '/:pathMatch(.*)*',
+        component: NotFound,
+        meta: {title: '404'}
+    }
 ];
 
 //创建路由器
