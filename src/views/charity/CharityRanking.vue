@@ -1,104 +1,203 @@
 <template>
-  <div class="user-statistics">
-    <div class="statistics-cards">
-      <el-row :gutter="10" style="margin-bottom: 40px;">
-        <el-col :span="8">
-          <el-card class="stat-card">
-            <div class="card-content">
-              <p>订单总量</p>
-              <h3>{{ statistics.totalOrders }}</h3>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="8">
-          <el-card class="stat-card">
-            <div class="card-content">
-              <p>线上预约数量</p>
-              <h3>{{ statistics.onlineAppointments }}</h3>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="8">
-          <el-card class="stat-card">
-            <div class="card-content">
-              <p>线下投递数量</p>
-              <h3>{{ statistics.offlineDeliveries }}</h3>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </div>
+  <div class="order-statistics">
+    <!-- 数字展示区域 -->
+    <el-row :gutter="10" style="margin-bottom: 40px;">
+      <el-col :span="8">
+        <el-card class="stat-card">
+          <div class="stat-title">订单总数量</div>
+          <div class="stat-number">{{ stats.orderTotal }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="stat-card">
+          <div class="stat-title">线上预约数量</div>
+          <div class="stat-number">{{ stats.onlineCount }}</div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="stat-card">
+          <div class="stat-title">线下投递数量</div>
+          <div class="stat-number">{{ stats.offlineCount }}</div>
+        </el-card>
+      </el-col>
+    </el-row>
 
-    <div class="chart-container">
-      <PieChart :chartData="chartData"/>
-    </div>
+    <!-- 饼状图展示区域 -->
+    <el-card class="chart-card">
+      <div class="chart-title">订单类型分布</div>
+      <div ref="pieChart" class="chart-container"></div>
+    </el-card>
 
+    <!-- 柱状图展示区域 -->
+    <el-card class="chart-card">
+      <div class="chart-title">订单类型统计</div>
+      <div ref="barChart" class="chart-container"></div>
+    </el-card>
   </div>
 </template>
 
-<script>
-import PieChart from '@/components/PieChart/index.vue';
-import {checkIn, getCheckInHistory, getUserStatistics} from '@/api/dataStatistics';
-import {Calendar} from "@element-plus/icons-vue";
+<script setup>
+import { onMounted, ref } from 'vue';
+import * as echarts from 'echarts';
+import { getOrderStatistics } from '@/api/dataStatistics.js';
 
-export default {
-  name: 'UserStatistics',
-  components: {
-    Calendar,
-    PieChart
-  },
-  data() {
-    return {
-      statistics: {
-        totalOrders: 0,
-        onlineAppointments: 0,
-        offlineDeliveries: 0
-      },
-      chartData: {
-        items: []
-      },
-      checkInStatus: '',
-      calendarData: [] // 日历数据
-    };
-  },
-  mounted() {
-    this.fetchUserStatistics();
-    this.fetchCheckInHistory(); // 获取签到历史
-  },
-  methods: {
-    async fetchUserStatistics() {
-      try {
-        const response = await getUserStatistics(); // 调用 API 获取数据
-        this.statistics = response.data;
-        this.chartData.items = [
-          {value: this.statistics.onlineAppointments, name: '线上预约'},
-          {value: this.statistics.offlineDeliveries, name: '线下投递'}
-        ];
-      } catch (error) {
-        console.error('获取用户统计数据失败:', error);
-      }
-    },
-    async checkIn() {
-      try {
-        const response = await checkIn(); // 调用签到 API
-        this.checkInStatus = response.message;
-      } catch (error) {
-        console.error('签到失败:', error);
-        this.checkInStatus = '签到失败，请重试';
-      }
-    },
-    async fetchCheckInHistory() {
-      try {
-        const response = await getCheckInHistory(); // 调用 API 获取签到历史
-        this.calendarData = response.data;
-      } catch (error) {
-        console.error('获取签到历史失败:', error);
-      }
+// 统计数据
+const stats = ref({
+  orderTotal: undefined,
+  onlineCount: undefined,
+  offlineCount: undefined,
+});
+
+// 图表实例
+let pieChartInstance = null;
+let barChartInstance = null;
+
+// 加载统计数据
+const loadOrderStatistics = async () => {
+  try {
+    const response = await getOrderStatistics();
+    stats.value = response.data;
+    if (pieChartInstance) {
+      updatePieChart();
     }
+    if (barChartInstance) {
+      updateBarChart();
+    }
+  } catch (error) {
+    console.error('获取订单统计数据失败:', error);
   }
 };
+
+// 初始化饼状图
+const initPieChart = () => {
+  pieChartInstance = echarts.init(document.querySelector('.chart-container'));
+  loadOrderStatistics();
+};
+
+// 初始化柱状图
+const initBarChart = () => {
+  barChartInstance = echarts.init(document.querySelectorAll('.chart-container')[1]);
+  loadOrderStatistics();
+};
+
+// 更新饼状图
+const updatePieChart = () => {
+  const option = {
+    tooltip: {
+      trigger: 'item'
+    },
+    legend: {
+      top: '5%',
+      left: 'center'
+    },
+    series: [
+      {
+        name: '订单类型',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '18',
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: [
+          { value: stats.value.onlineCount, name: '线上预约' },
+          { value: stats.value.offlineCount, name: '线下投递' }
+        ]
+      }
+    ]
+  };
+  pieChartInstance.setOption(option);
+};
+
+// 更新柱状图
+const updateBarChart = () => {
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '8%',
+      bottom: '15%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: ['线上预约', '线下投递']
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name: '订单数量',
+        type: 'bar',
+        barWidth: '60%',
+        data: [stats.value.onlineCount, stats.value.offlineCount],
+        itemStyle: {
+          color: '#409EFF'
+        }
+      }
+    ]
+  };
+  barChartInstance.setOption(option);
+};
+
+// 页面加载
+onMounted(() => {
+  initPieChart();
+  initBarChart();
+});
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.order-statistics {
+  padding: 20px;
+}
 
+.stat-card {
+  text-align: center;
+}
+
+.stat-title {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.chart-card {
+  height: 400px;
+  margin-bottom: 40px;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.chart-container {
+  height: 350px;
+  width: 100%;
+}
 </style>
